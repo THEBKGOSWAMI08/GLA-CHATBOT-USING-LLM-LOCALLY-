@@ -1,0 +1,13 @@
+flask
+flask-cors
+langchain
+langchain-community
+langchain-ollama
+langchain-text-splitters
+langchainhub
+chromadb
+pypdf
+beautifulsoup4
+urllib3
+requests
+langchain-core
