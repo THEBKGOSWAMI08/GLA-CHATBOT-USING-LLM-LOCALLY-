@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "gla-chatbot"
+version = "0.1.0"
+description = "RAG-based AI chatbot for GLA University, powered by a local LLM via Ollama."
+authors = ["THEBKGOSWAMI08"]
+readme = "README.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = ">=3.10,<4.0"
+flask = "*"
+flask-cors = "*"
+langchain = "*"
+langchain-core = "*"
+langchain-community = "*"
+langchain-ollama = "*"
+langchain-text-splitters = "*"
+langchainhub = "*"
+chromadb = "*"
+pypdf = "*"
+pypdfium2 = "*"
+beautifulsoup4 = "*"
+urllib3 = "*"
+requests = "*"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

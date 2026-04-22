@@ -11,7 +11,7 @@ GLA-CHATBOT-USING-LLM-LOCALLY/
 │
 ├── run.py                     # Entry point — python run.py
 ├── config.py                  # All configuration constants
-├── requirements.txt
+├── pyproject.toml             # Poetry dependency spec
 │
 ├── app/                       # Flask application package
 │   ├── __init__.py            # App factory + auto-ingest on startup
@@ -55,7 +55,7 @@ GLA-CHATBOT-USING-LLM-LOCALLY/
 ### Prerequisites
 
 - Python 3.10+
-- pip
+- [Poetry](https://python-poetry.org/docs/#installation) for dependency management
 - [Ollama](https://ollama.com) installed and running
 
 ### 1. Pull Required Ollama Models
@@ -68,12 +68,19 @@ ollama pull nomic-embed-text
 ### 2. Install Python Dependencies
 
 ```bash
-pip install -r requirements.txt
+poetry install
 ```
 
 ### 3. Start the Server
 
 ```bash
+poetry run python run.py
+```
+
+Or activate the Poetry shell first, then run the server:
+
+```bash
+poetry shell
 python run.py
 ```
 
@@ -97,7 +104,7 @@ data/
 ```
 
 ```bash
-python run.py   # detects new file, re-ingests, then starts
+poetry run python run.py   # detects new file, re-ingests, then starts
 ```
 
 ---
@@ -184,7 +191,7 @@ All constants are in [config.py](config.py).
 Ingestion runs automatically, but you can also trigger it manually:
 
 ```bash
-python scripts/ingest.py
+poetry run python scripts/ingest.py
 ```
 
 ---

@@ -9,6 +9,7 @@ Can also be run manually:
 import os
 import sys
 import glob
+import shutil
 
 # Ensure project root is on the path when run as a standalone script
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -16,7 +17,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-from langchain_community.document_loaders import PyPDFLoader, TextLoader
+from langchain_community.document_loaders import PyPDFLoader, PyPDFium2Loader, TextLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.embeddings import OllamaEmbeddings
 from langchain_community.vectorstores import Chroma
@@ -29,6 +30,10 @@ def ingest():
     print(f"   Data directory : {DATA_DIR}")
     print(f"   Vector DB path : {DB_DIR}")
 
+    if os.path.exists(DB_DIR):
+        print(f"   🧹 Clearing existing vector DB at {DB_DIR}...")
+        shutil.rmtree(DB_DIR)
+
     docs = []
 
     # PDF files
@@ -36,13 +41,23 @@ def ingest():
     if pdf_files:
         print(f"\n📄 Found {len(pdf_files)} PDF file(s):")
         for path in pdf_files:
+            print(f"   Processing: {os.path.basename(path)}...")
+            loaded = []
             try:
-                print(f"   Processing: {os.path.basename(path)}...")
-                loader = PyPDFLoader(path)
-                docs.extend(loader.load())
-                print(f"   ✅ Loaded {os.path.basename(path)}")
+                loaded = PyPDFLoader(path).load()
             except Exception as e:
-                print(f"   ❌ Failed: {e}")
+                print(f"   ⚠️  PyPDFLoader failed ({e}); trying PyPDFium2Loader...")
+
+            total_chars = sum(len(d.page_content.strip()) for d in loaded)
+            if total_chars < 100:
+                try:
+                    loaded = PyPDFium2Loader(path).load()
+                    print(f"   ↪️  Re-parsed with PyPDFium2Loader")
+                except Exception as e:
+                    print(f"   ❌ PyPDFium2Loader also failed: {e}")
+
+            docs.extend(loaded)
+            print(f"   ✅ Loaded {os.path.basename(path)} ({sum(len(d.page_content.strip()) for d in loaded)} chars)")
     else:
         print("\n⚠️  No PDF files found in data/.")
 
